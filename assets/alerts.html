@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Smart Alert 2.0</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Plus Jakarta Sans Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .glass-overlay {
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 max-w-4xl w-full">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-slate-800 mb-3">Smart Alert 2.0</h1>
+            <p class="text-slate-500">Sekarang dengan 8 variasi tema dan dukungan konfirmasi (Tombol Batal).</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- 1. Success -->
+            <button onclick="demoAddData()" class="py-3 px-4 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-xl font-semibold hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check-circle"></i> Tambah (Success)
+            </button>
+            
+            <!-- 2. Error -->
+            <button onclick="demoError()" class="py-3 px-4 bg-rose-50 text-rose-600 border border-rose-200 rounded-xl font-semibold hover:bg-rose-100 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-circle-xmark"></i> Gagal (Rose)
+            </button>
+            
+            <!-- 3. Warning -->
+            <button onclick="demoWarning()" class="py-3 px-4 bg-amber-50 text-amber-600 border border-amber-200 rounded-xl font-semibold hover:bg-amber-100 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation"></i> Peringatan (Amber)
+            </button>
+            
+            <!-- 4. Info -->
+            <button onclick="demoInfo()" class="py-3 px-4 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl font-semibold hover:bg-blue-100 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-circle-info"></i> Info (Blue)
+            </button>
+
+            <!-- 5. Question/Confirm (Indigo) -->
+            <button onclick="demoConfirmDelete()" class="py-3 px-4 bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-xl font-semibold hover:bg-indigo-100 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-circle-question"></i> Konfirmasi (Indigo)
+            </button>
+
+            <!-- 6. Purple -->
+            <button onclick="demoPurple()" class="py-3 px-4 bg-purple-50 text-purple-600 border border-purple-200 rounded-xl font-semibold hover:bg-purple-100 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-bolt"></i> Premium (Purple)
+            </button>
+
+            <!-- 7. Teal -->
+            <button onclick="demoTeal()" class="py-3 px-4 bg-teal-50 text-teal-600 border border-teal-200 rounded-xl font-semibold hover:bg-teal-100 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-shield-halved"></i> Aman (Teal)
+            </button>
+
+            <!-- 8. Slate/Neutral -->
+            <button onclick="demoSlate()" class="py-3 px-4 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl font-semibold hover:bg-slate-100 transition-colors flex items-center justify-center gap-2">
+                <i class="fa-solid fa-box-archive"></i> Draft (Slate)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const SmartAlert = {
+            fire: function (options) {
+                return new Promise((resolve) => {
+                    // Konfigurasi Default & Opsi Batal
+                    const config = {
+                        type: options.type || 'info', 
+                        title: options.title || 'Pemberitahuan',
+                        text: options.text || '',
+                        confirmText: options.confirmText || 'Oke',
+                        showCancelButton: options.showCancelButton || false,
+                        cancelText: options.cancelText || 'Batal',
+                        ...options
+                    };
+
+                    const themes = {
+                        success: { icon: 'fa-check', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-500', btnBg: 'bg-emerald-500 hover:bg-emerald-600', ring: 'ring-emerald-100' },
+                        error: { icon: 'fa-xmark', iconBg: 'bg-rose-100', iconColor: 'text-rose-500', btnBg: 'bg-rose-500 hover:bg-rose-600', ring: 'ring-rose-100' },
+                        warning: { icon: 'fa-exclamation', iconBg: 'bg-amber-100', iconColor: 'text-amber-500', btnBg: 'bg-amber-500 hover:bg-amber-600', ring: 'ring-amber-100' },
+                        info: { icon: 'fa-info', iconBg: 'bg-blue-100', iconColor: 'text-blue-500', btnBg: 'bg-blue-500 hover:bg-blue-600', ring: 'ring-blue-100' },
+                        question: { icon: 'fa-question', iconBg: 'bg-indigo-100', iconColor: 'text-indigo-500', btnBg: 'bg-indigo-500 hover:bg-indigo-600', ring: 'ring-indigo-100' },
+                        purple: { icon: 'fa-bolt', iconBg: 'bg-purple-100', iconColor: 'text-purple-500', btnBg: 'bg-purple-500 hover:bg-purple-600', ring: 'ring-purple-100' },
+                        teal: { icon: 'fa-shield-check', iconBg: 'bg-teal-100', iconColor: 'text-teal-500', btnBg: 'bg-teal-500 hover:bg-teal-600', ring: 'ring-teal-100' },
+                        slate: { icon: 'fa-box-archive', iconBg: 'bg-slate-100', iconColor: 'text-slate-500', btnBg: 'bg-slate-700 hover:bg-slate-800', ring: 'ring-slate-100' }
+                    };
+
+                    const theme = themes[config.type] || themes.info;
+
+                    // Bersihkan alert sebelumnya jika ada
+                    const existingAlert = document.getElementById('smart-alert-container');
+                    if (existingAlert) existingAlert.remove();
+
+                    const container = document.createElement('div');
+                    container.id = 'smart-alert-container';
+                    container.className = 'fixed inset-0 z-[9999] flex items-center justify-center glass-overlay opacity-0 transition-opacity duration-300 px-4';
+
+                    // Cek apakah pakai tombol batal agar layout tombol flex-row/col disesuaikan
+                    const buttonLayout = config.showCancelButton 
+                        ? `<button id="smart-alert-cancel" class="w-full sm:w-1/2 py-3 rounded-xl font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all duration-200 transform active:scale-95">
+                                ${config.cancelText}
+                           </button>
+                           <button id="smart-alert-btn" class="w-full sm:w-1/2 py-3 rounded-xl font-semibold text-white transition-all duration-200 transform active:scale-95 ${theme.btnBg} shadow-sm">
+                                ${config.confirmText}
+                           </button>` 
+                        : `<button id="smart-alert-btn" class="w-full py-3 rounded-xl font-semibold text-white transition-all duration-200 transform active:scale-95 ${theme.btnBg} shadow-sm">
+                                ${config.confirmText}
+                           </button>`;
+
+                    container.innerHTML = `
+                        <div id="smart-alert-box" class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 max-w-sm w-full transform scale-95 opacity-0 transition-all duration-300 ease-out border border-slate-100">
+                            <!-- Ikon -->
+                            <div class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-5 ${theme.iconBg} ring-8 ${theme.ring}">
+                                <i class="fa-solid ${theme.icon} text-2xl ${theme.iconColor}"></i>
+                            </div>
+                            
+                            <!-- Teks -->
+                            <h3 class="text-xl font-bold text-center text-slate-800 mb-2">${config.title}</h3>
+                            <p class="text-center text-slate-500 text-sm mb-6 leading-relaxed">${config.text}</p>
+                            
+                            <!-- Tombol (Bisa single, bisa double tergantung showCancelButton) -->
+                            <div class="flex flex-col-reverse sm:flex-row gap-3 w-full">
+                                ${buttonLayout}
+                            </div>
+                        </div>
+                    `;
+
+                    document.body.appendChild(container);
+                    const alertBox = container.querySelector('#smart-alert-box');
+                    const btnConfirm = container.querySelector('#smart-alert-btn');
+                    const btnCancel = container.querySelector('#smart-alert-cancel');
+
+                    document.body.style.overflow = 'hidden';
+
+                    setTimeout(() => {
+                        container.classList.remove('opacity-0');
+                        container.classList.add('opacity-100');
+                        alertBox.classList.remove('scale-95', 'opacity-0');
+                        alertBox.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+
+                    const closeAlert = (isConfirmed = false) => {
+                        container.classList.remove('opacity-100');
+                        container.classList.add('opacity-0');
+                        alertBox.classList.remove('scale-100', 'opacity-100');
+                        alertBox.classList.add('scale-95', 'opacity-0');
+                        
+                        setTimeout(() => {
+                            container.remove();
+                            document.body.style.overflow = ''; 
+                            // Resolve promise dengan format isConfirmed
+                            resolve({ isConfirmed: isConfirmed }); 
+                        }, 300);
+                    };
+
+                    btnConfirm.addEventListener('click', () => closeAlert(true));
+                    if (btnCancel) {
+                        btnCancel.addEventListener('click', () => closeAlert(false));
+                    }
+                    
+                    // Klik di luar box = batal
+                    container.addEventListener('click', (e) => {
+                        if(e.target === container) {
+                            closeAlert(false);
+                        }
+                    });
+                });
+            }
+        };
+
+
+        // 1. Sukses (Emerald) - Contoh Data Ditambahkan
+        function demoAddData() {
+            SmartAlert.fire({
+                type: 'success',
+                title: 'Berhasil!',
+                text: 'Data baru berhasil ditambahkan ke dalam sistem.',
+                confirmText: 'Tutup'
+            });
+        }
+
+        // 2. Error (Rose)
+        function demoError() {
+            SmartAlert.fire({
+                type: 'error',
+                title: 'Akses Ditolak',
+                text: 'Anda tidak memiliki izin untuk mengubah konfigurasi sistem ini.',
+                confirmText: 'Kembali'
+            });
+        }
+
+        // 3. Warning (Amber)
+        function demoWarning() {
+            SmartAlert.fire({
+                type: 'warning',
+                title: 'Peringatan Kapasitas',
+                text: 'Penyimpanan server Anda telah mencapai 90%. Segera lakukan pembersihan.',
+                confirmText: 'Saya Mengerti'
+            });
+        }
+
+        // 4. Info (Blue)
+        function demoInfo() {
+            SmartAlert.fire({
+                type: 'info',
+                title: 'Sistem Diperbarui',
+                text: 'Versi terbaru IBIS v1.1 telah diterapkan. Cek log rilis untuk detailnya.',
+                confirmText: 'Lihat Nanti'
+            });
+        }
+
+        // 5. Question/Konfirmasi (Indigo) - Contoh: "Ya, Hapus" lalu "Berhasil Dihapus"
+        function demoConfirmDelete() {
+            SmartAlert.fire({
+                type: 'question',
+                title: 'Apakah Anda Yakin?',
+                text: 'Data siswa ini akan dihapus secara permanen dari sistem.',
+                showCancelButton: true, // MUNCULKAN TOMBOL BATAL
+                confirmText: 'Ya, Hapus',
+                cancelText: 'Batal'
+            }).then((result) => {
+                // Mengecek apakah user klik tombol "Ya, Hapus"
+                if (result.isConfirmed) {
+                    // Beri sedikit jeda agar animasi tutup selesai, lalu munculkan alert Sukses
+                    setTimeout(() => {
+                        SmartAlert.fire({
+                            type: 'success',
+                            title: 'Terhapus!',
+                            text: 'Data berhasil dihapus dari sistem.'
+                        });
+                    }, 400); 
+                } else {
+                    console.log('Aksi dibatalkan user.');
+                }
+            });
+        }
+
+        // 6. Purple (Premium/Fitur Khusus)
+        function demoPurple() {
+            SmartAlert.fire({
+                type: 'purple',
+                title: 'Fitur Premium',
+                text: 'Laporan analitik mendalam hanya tersedia untuk pelanggan paket Pro.',
+                showCancelButton: true,
+                confirmText: 'Upgrade Sekarang',
+                cancelText: 'Lain Kali'
+            }).then((res) => {
+                if(res.isConfirmed) alert("Mengarahkan ke halaman pembayaran...");
+            });
+        }
+
+        // 7. Teal (Aman/Keamanan)
+        function demoTeal() {
+            SmartAlert.fire({
+                type: 'teal',
+                title: 'Sinkronisasi Aman',
+                text: 'Semua data keuangan telah dienkripsi dan di-backup ke server awan.',
+                confirmText: 'Tutup'
+            });
+        }
+
+        // 8. Slate (Netral/Arsip)
+        function demoSlate() {
+            SmartAlert.fire({
+                type: 'slate',
+                title: 'Draft Tersimpan',
+                text: 'Perubahan pada dokumen telah disimpan otomatis sebagai draft.',
+                confirmText: 'Lanjutkan Kerja'
+            });
+        }
+    </script>
+</body>
+</html>
